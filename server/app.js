@@ -109,7 +109,7 @@ module.exports = function (customMiddlewares) {
    app.use(bodyParser.json());
    app.use(bodyParser.urlencoded({ extended: false }));
    app.use(cookieParser());
-   app.use(require('express-session')({ secret: config.get('secret'), resave: false, saveUninitialized: false }));
+   app.use(require('express-session')({ secret: config.get('sessionSecret'), resave: false, saveUninitialized: false }));
    // Initialize Passport and restore authentication state, if any, from the
    // session.
    app.use(passport.initialize());

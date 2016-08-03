@@ -1,11 +1,11 @@
 version: '2'
 services:
   db:
-    container_name: db-host
+    container_name: graphql-db
     image: postgres
     environment:
       - POSTGRES_PASSWORD=123
-      - POSTGRES_USER=tournament
-      - POSTGRES_DB=tournament
+      - POSTGRES_USER=koolaid
+      - POSTGRES_DB=koolaid
     ports:
       - "5432:5432"

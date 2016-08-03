@@ -5,21 +5,12 @@
       "user": "DBUSER",
       "pass": "DBPASS"
    },
-   "secret": "SECRET",
-   "aws": {
-      "id": "AWSID",
-      "key": "AWSKEY",
-      "region": "AWSREGION"
-   },
    "email": {
       "awsAccessKey": "EMAIL_AWS_ACESS_KEY_ID",
       "awsSecretAccessKey": "EMAIL_AWS_SECRET_ACCESS_KEY",
       "awsRegion": "EMAIL_AWS_REGION"
    },
+   "sessionSecret": "SESSION_SECRET",
    "appDomain": "APP_DOMAIN",
-   "password": "ADMIN_PASS",
-   "s3Params": {
-      "bucket": "S3BUCKET",
-      "prefix": "BUCKET_PREFIX"
-   }
+   "password": "ADMIN_PASS"
 }

@@ -3,9 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "./node_modules/sequelize-cli/bin/sequelize db:migrate && nodemon --exec 'env NODE_ENV=development babel-node ./server/webpackDevServer.js'",
-    "debug": "./node_modules/sequelize-cli/bin/sequelize db:migrate && nodemon --exec 'env NODE_ENV=development babel-node --debug ./server/webpackDevServer.js'",
-    "debug-brk": "./node_modules/sequelize-cli/bin/sequelize db:migrate && nodemon --exec 'env NODE_ENV=development babel-node --debug --debug-brk ./server/webpackDevServer.js'",
+    "start": "./node_modules/sequelize-cli/bin/sequelize db:migrate && nodemon --exec 'env NODE_ENV=development ./node_modules/babel-cli/bin/babel-node.js ./server/webpackDevServer.js'",
+    "debug": "./node_modules/sequelize-cli/bin/sequelize db:migrate && nodemon --exec 'env NODE_ENV=development ./node_modules/babel-cli/bin/babel-node.js --debug ./server/webpackDevServer.js'",
+    "debug-brk": "./node_modules/sequelize-cli/bin/sequelize db:migrate && nodemon --exec 'env NODE_ENV=development ./node_modules/babel-cli/bin/babel-node.js --debug --debug-brk ./server/webpackDevServer.js'",
     "build": "rm -rf ./dist && env NODE_ENV=production node ./node_modules/webpack/bin/webpack.js -p --config ./webpack.server.config.js && env NODE_ENV=production node ./node_modules/webpack/bin/webpack.js -p --config ./webpack.client.config.js"
   },
   "babel": {
@@ -36,7 +36,6 @@
     "file-loader": "^0.9.0",
     "graphql": "^0.6.1",
     "graphql-relay": "^0.4.2",
-    "graphql-sequelize": "^2.2.0",
     "html-webpack-plugin": "^2.22.0",
     "jsonfile": "^2.3.0",
     "morgan": "~1.6.1",

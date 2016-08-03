@@ -6,7 +6,6 @@ let fs = require('fs'),
    path = require('path'),
    config = require('config'),
    Sequelize = require('sequelize'),
-   graphQLSequelize = require('graphql-sequelize'),
    GraphQL = require('graphql'),
    dbHost = config.get('db.host'),
    dbName = config.get('db.name'),
@@ -18,14 +17,13 @@ let fs = require('fs'),
 
 let db = {
    graphQLTypes: {},
-   graphQLInputTypes: {},
    graphQLQueries: {},
    graphQLMutations: {},
    models: {}
 };
 
 let schemas = {
-   News: require('./news.js'),
+   Posts: require('./posts.js'),
    Users: require('./users.js')
 };
 
@@ -54,14 +52,7 @@ Object.keys(schemas).forEach((name) => {
 
 // initializing graphQL types
 Object.keys(schemas).forEach((name) => {
-   db.graphQLTypes[name] = schemas[name].graphQLType(db);
-});
-
-// getting graphQL input types
-Object.keys(schemas).forEach((name) => {
-   if (schemas[name].graphQLInputType != null) {
-      db.graphQLInputTypes[name] = schemas[name].graphQLInputType(db);
-   }
+   db.graphQLTypes = extend(db.graphQLTypes, schemas[name].graphQLTypes(db));
 });
 
 // getting graphQL queries

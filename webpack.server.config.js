@@ -44,7 +44,7 @@ module.exports = {
    externals: nodeModules,
    devtool: 'sourcemap',
    plugins,
-   node: {
+   node: { // adds mock values for these properties
       __filename: true,
       __dirname: true
    },
