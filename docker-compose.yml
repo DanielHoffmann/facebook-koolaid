@@ -1,0 +1,11 @@
+version: '2'
+services:
+  db:
+    container_name: db-host
+    image: postgres
+    environment:
+      - POSTGRES_PASSWORD=123
+      - POSTGRES_USER=tournament
+      - POSTGRES_DB=tournament
+    ports:
+      - "5432:5432"

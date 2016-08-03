@@ -1,0 +1,16 @@
+<html lang="en">
+<head>
+   <meta charset='utf8' />
+   <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <link rel="stylesheet" type="text/css"  href="//fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900") />
+   <base href='/' />
+   <title>Tournaments CMS</title>
+<body>
+   <% for (var chunk in htmlWebpackPlugin.files.chunks) { %>
+   <script src="<%= htmlWebpackPlugin.files.chunks[chunk].entry %>"></script>
+   <% } %>
+
+   <% if (htmlWebpackPlugin.options.devServer) { %>
+   <script src="<%= htmlWebpackPlugin.options.devServer%>/webpack-dev-server.js"></script>
+   <% } %>
+</body>

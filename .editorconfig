@@ -1,0 +1,43 @@
+# This file is for unifying the coding style for different editors and IDEs.
+# More information at http://EditorConfig.org
+# Rename this file to .editorconfig and place it in your project root.
+
+# No .editorconfig files above the root directory
+root = true
+
+[*]
+indent_style = space
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.js]
+indent_size = 3
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.jade]
+indent_size = 4
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.json]
+indent_size = 3
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.{html,rb,scss,xml,sass,css}]
+indent_size = 3
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.php]
+indent_size = 3
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.md]
+indent_size = 4
+trim_trailing_whitespace = true
+insert_final_newline = true

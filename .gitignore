@@ -1,0 +1,23 @@
+.env
+npm-debug.log
+.idea
+node_modules
+.awspublish-*
+/dist/
+seeders
+config/config.json
+docs
+*.map
+/.project
+
+vagrant/.vagrant/
+vagrant/puphpet/files/dot/ssh/*
+!vagrant/puphpet/files/dot/ssh/keep
+vagrant/overrides/*
+!vagrant/overrides/keep
+vagrant/puphpet/puppet/.tmp
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml

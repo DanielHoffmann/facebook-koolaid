@@ -1,0 +1,15 @@
+{
+   "db": {
+      "host": "127.0.0.1",
+      "name": "graphql",
+      "user": "tournament",
+      "pass": "123"
+   },
+   "secret": "session secret",
+   "appDomain": "http://localhost:3000/",
+   "password": "123123",
+   "s3Params": {
+      "bucket": "kambi-widgets",
+      "prefix": "tournamentdata"
+   }
+}
