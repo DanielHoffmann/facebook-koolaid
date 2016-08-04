@@ -1,13 +1,8 @@
-let express = require('express'),
-   router = express.Router(),
-   passport = require('passport'),
-   path = require('path'),
-   bodyParser = require('body-parser'),
-   colorOut = require('../../util/colorOut.js'),
-   tracer = require('tracer').console(colorOut()),
-   ensureLoggedIn = require('connect-ensure-login').ensureLoggedIn,
-   db = require('../../models/index'),
-   graphqlHTTP = require('express-graphql');
+import express from 'express';
+let router = express.Router();
+import {ensureLoggedIn} from 'connect-ensure-login';
+import db from '../../models/index';
+import graphqlHTTP from 'express-graphql';
 
 var gqlOptions = {
    schema: db.schema
@@ -23,4 +18,4 @@ if (process.env.NODE_ENV === 'development') {
 
 router.use('/graphql', graphqlHTTP(gqlOptions));
 
-module.exports = router;
+export default router;

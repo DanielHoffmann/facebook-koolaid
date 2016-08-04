@@ -1,19 +1,18 @@
 
-let webpack = require('webpack'),
-   WebpackDevServer = require('webpack-dev-server'),
-   webpackClientConfig = require('../webpack.client.config'),
-   webpackDevMiddleware = require('webpack-dev-middleware'),
-   webpackHotMiddleware = require('webpack-hot-middleware'),
-   app = require('./app');
+import webpack from 'webpack';
+import webpackClientConfig from '../webpack.client.config';
+import webpackDevMiddleware from 'webpack-dev-middleware';
+import webpackHotMiddleware from 'webpack-hot-middleware';
+import app from './app';
 
 
-let compiler = webpack(webpackClientConfig);
-let middleware = webpackDevMiddleware(compiler, {
+const compiler = webpack(webpackClientConfig);
+const middleware = webpackDevMiddleware(compiler, {
    noInfo: true,
    publicPath: webpackClientConfig.output.publicPath,
    stats: {colors: true}
 });
-let hotMiddleware = webpackHotMiddleware(compiler, {
+const hotMiddleware = webpackHotMiddleware(compiler, {
    reload: true
 });
 app([middleware, hotMiddleware]);

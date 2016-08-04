@@ -1,12 +1,19 @@
 'use strict';
 
-let Sequelize = require('sequelize'),
-   resolver = require('graphql-sequelize').resolver,
-   gQL = require('graphql');
+import Sequelize from 'sequelize';
+import {resolver} from 'graphql-sequelize';
+import {
+   GraphQLObjectType,
+   GraphQLNonNull,
+   GraphQLInt,
+   GraphQLString,
+   GraphQLBoolean,
+   GraphQLList
+} from 'graphql';
 
-module.exports = {
+export default {
    sequelizeModel: ( sequelize ) => {
-      let Users = sequelize.define('Users', {
+      const Users = sequelize.define('Users', {
          id: {
             type: Sequelize.INTEGER,
             primaryKey: true,
@@ -38,26 +45,25 @@ module.exports = {
    },
 
    sequelizeAssociate(db) {
-
    },
 
    graphQLTypes: (db) => {
       return {
-         User: new gQL.GraphQLObjectType({
+         User: new GraphQLObjectType({
             name: 'User',
             description: 'A user in the system',
             fields: () => {
                return {
                   id: {
-                     type: new gQL.GraphQLNonNull(gQL.GraphQLInt),
+                     type: new GraphQLNonNull(GraphQLInt),
                      description: 'The id of the user.'
                   },
                   email: {
-                     type: new gQL.GraphQLNonNull(gQL.GraphQLString),
+                     type: new GraphQLNonNull(GraphQLString),
                      description: 'The email of the user.',
                   },
                   isAdmin: {
-                     type: new gQL.GraphQLNonNull(gQL.GraphQLBoolean),
+                     type: new GraphQLNonNull(GraphQLBoolean),
                      description: 'True if the user is an admin.',
                   }
                };
@@ -69,22 +75,22 @@ module.exports = {
    graphQLQueries: (db) => {
       return {
          users: {
-            type: new gQL.GraphQLList(db.graphQLTypes.User),
+            type: new GraphQLList(db.graphQLTypes.User),
             args: {
                id: {
-                  type: gQL.GraphQLInt
+                  type: GraphQLInt
                },
                email: {
-                  type: gQL.GraphQLString
+                  type: GraphQLString
                },
                isAdmin: {
-                  type: gQL.GraphQLBoolean
+                  type: GraphQLBoolean
                },
                limit: {
-                  type: gQL.GraphQLInt
+                  type: GraphQLInt
                },
                order: {
-                  type: gQL.GraphQLString
+                  type: GraphQLString
                }
             },
             resolve: resolver(db.models.Users)

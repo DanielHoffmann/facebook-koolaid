@@ -1,34 +1,44 @@
 'use strict';
 
-require('pg').defaults.parseInt8 = true;
-let fs = require('fs'),
-   extend = require('util')._extend,
-   path = require('path'),
-   config = require('config'),
-   Sequelize = require('sequelize'),
-   GraphQL = require('graphql'),
+import pg from 'pg'
+pg.defaults.parseInt8 = true;
+import {_extend as extend} from 'util';
+import config from 'config';
+import Sequelize from 'sequelize';
+import {
+   GraphQLSchema,
+   GraphQLObjectType
+} from 'graphql';
+import colorOut from '../util/colorOut.js';
+import tracer from 'tracer';
+
+import Users from './users.js';
+import Posts from './posts.js';
+import Comments from './comments.js';
+
+const schemas = {
+   Users,
+   Posts,
+   Comments
+};
+
+const logger = tracer.console(colorOut()),
    dbHost = config.get('db.host'),
    dbName = config.get('db.name'),
    dbUser = config.get('db.user'),
-   dbPass = config.get('db.pass'),
-   colorOut = require('../util/colorOut.js'),
-   tracer = require('tracer'),
-   logger = tracer.console(colorOut());
+   dbPass = config.get('db.pass');
 
-let db = {
+
+const db = {
    graphQLTypes: {},
    graphQLQueries: {},
    graphQLMutations: {},
    models: {}
 };
 
-let schemas = {
-   Posts: require('./posts.js'),
-   Users: require('./users.js')
-};
-
 logger.info('Connecting to database %s at %s as user @ %s', dbName, dbHost, dbUser);
-let sequelize = new Sequelize(dbName, dbUser, dbPass, {
+
+db.sequelize = new Sequelize(dbName, dbUser, dbPass, {
    host: dbHost,
    dialect: 'postgres',
    maxConcurrentQueries: 50,
@@ -40,44 +50,43 @@ let sequelize = new Sequelize(dbName, dbUser, dbPass, {
    logging: logger.debug
 });
 
+const schemaKeys = Object.keys(schemas);
+
 // initializing sequelize models
-Object.keys(schemas).forEach((name) => {
-   db.models[name] = schemas[name].sequelizeModel(sequelize);
+schemaKeys.forEach((name) => {
+   db.models[name] = schemas[name].sequelizeModel(db.sequelize);
 });
 
 // creating associations
-Object.keys(schemas).forEach((name) => {
+schemaKeys.forEach((name) => {
    schemas[name].sequelizeAssociate(db);
 });
 
 // initializing graphQL types
-Object.keys(schemas).forEach((name) => {
+schemaKeys.forEach((name) => {
    db.graphQLTypes = extend(db.graphQLTypes, schemas[name].graphQLTypes(db));
 });
 
 // getting graphQL queries
-Object.keys(schemas).forEach((name) => {
+schemaKeys.forEach((name) => {
    db.graphQLQueries = extend(db.graphQLQueries, schemas[name].graphQLQueries(db));
 });
 
 // getting graphQL mutations
-Object.keys(schemas).forEach((name) => {
+schemaKeys.forEach((name) => {
    db.graphQLMutations = extend(db.graphQLMutations, schemas[name].graphQLMutations(db));
 });
 
-db.sequelize = sequelize;
-db.Sequelize = Sequelize;
-
-db.schema = new GraphQL.GraphQLSchema({
-   query: new GraphQL.GraphQLObjectType({
+db.schema = new GraphQLSchema({
+   query: new GraphQLObjectType({
       name: 'RootQueryType',
       fields: db.graphQLQueries
    }),
 
-   mutation: new GraphQL.GraphQLObjectType({
+   mutation: new GraphQLObjectType({
       name: 'Mutations',
       fields: db.graphQLMutations
    })
 });
 
-module.exports = db;
+export default db;

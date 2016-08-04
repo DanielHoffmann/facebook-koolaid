@@ -1,22 +1,24 @@
-let nodemailer = require('nodemailer'),
-   ses = require('nodemailer-ses-transport'),
-   config = require('config'),
-   awsAccessKey = config.get('email.awsAccessKey'),
+import nodemailer from 'nodemailer';
+import ses from 'nodemailer-ses-transport';
+import config from 'config';
+
+const awsAccessKey = config.get('email.awsAccessKey'),
    awsSecretAccessKey = config.get('email.awsSecretAccessKey'),
-   awsRegion = config.get('email.awsRegion'),
-   appDomain = config.get('appDomain');
+   awsRegion = config.get('email.awsRegion');
+
+let appDomain = config.get('appDomain');
 
 if (appDomain[appDomain.length - 1] !== '/') {
    appDomain += '/';
 }
 
-var sendMail = (to, subject, html, successMessage) => {
-   var credentials = {
+const sendMail = (to, subject, html, successMessage) => {
+   const credentials = {
       accessKeyId: awsAccessKey,
       secretAccessKey: awsSecretAccessKey,
       region: awsRegion
    };
-   var transporter = nodemailer.createTransport(ses(credentials));
+   const transporter = nodemailer.createTransport(ses(credentials));
 
    return transporter.sendMail({
       from: 'support@globalmouth.com',
@@ -24,16 +26,16 @@ var sendMail = (to, subject, html, successMessage) => {
       subject: subject,
       html: html,
    }).then((err, info) => {
-      console.log(successMessage);
+      console.log(successMessage); //eslint-disable-line no-console
    }).catch((err) => {
-      console.trace(err);
+      console.trace(err); //eslint-disable-line no-console
    });
 };
 
-exports.resetPassword = (to, token) => {
-   var url = appDomain + 'reset?token=' + token;
+export function resetPassword (to, token) {
+   const url = appDomain + 'reset?token=' + token;
 
-   var html = '<h1>Reset Your Password</h1>' +
+   const html = '<h1>Reset Your Password</h1>' +
       '<p>To reset your password click in the following link:</p>' +
       '<p><a href="' + url + '">' + url + '</a></p>';
 
@@ -42,12 +44,12 @@ exports.resetPassword = (to, token) => {
       'Password reset for Tournament CMS',
       html,
       'Succesfully sent password reset email to ' + to);
-};
+}
 
-exports.userCreated = (to, token) => {
-   var url = appDomain + 'reset?token=' + token;
+export function userCreated (to, token) {
+   const url = appDomain + 'reset?token=' + token;
 
-   var html = '<h1>User created successfully</h1>' +
+   const html = '<h1>User created successfully</h1>' +
       '<p>To reset your password click in the following link:</p>' +
       '<p><a href="' + url + '">' + url + '</a></p>';
 
@@ -56,4 +58,4 @@ exports.userCreated = (to, token) => {
       'User Created in the Tournament CMS',
       html,
       'Succesfully sent user created email to ' + to);
-};
+}

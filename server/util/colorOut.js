@@ -1,8 +1,9 @@
-var clc = require('cli-color');
-module.exports = () => {
+import clc from 'cli-color';
+
+export default () => {
    return({
       format : [
-         clc.black.bgWhite("{{timestamp}} {{file}}:{{line}} ") + "<{{title}}> {{method}} {{message}}" //default format
+         clc.black.bgWhite('{{timestamp}} {{file}}:{{line}} ') + '<{{title}}> {{method}} {{message}}' //default format
       ],
       filters : {
          //log : clc.black.bgWhite,

@@ -1,25 +1,26 @@
-let express = require('express'),
-   path = require('path'),
-   favicon = require('serve-favicon'),
-   logger = require('morgan'),
-   cookieParser = require('cookie-parser'),
-   bodyParser = require('body-parser'),
-   passport = require('passport'),
-   LocalStrategy = require('passport-local').Strategy,
-   routes = require('./routes/index'),
-   bcrypt = require('bcrypt'),
-   colorOut = require('./util/colorOut.js'),
-   tracer = require('tracer').console(colorOut()),
-   config = require('config'),
-   db = require('./models/index'),
-   debug = require('debug')('graphql:server'),
-   http = require('http');
+import express from 'express';
+import logger from 'morgan';
+import cookieParser from 'cookie-parser';
+import bodyParser from 'body-parser';
+import passport from 'passport';
+import {Strategy as LocalStrategy} from 'passport-local';
+import routes from './routes/index';
+import bcrypt from 'bcrypt';
+import colorOut from './util/colorOut.js';
+import _tracer from 'tracer';
+const tracer = _tracer.console(colorOut());
+import config from 'config';
+import db from './models/index';
+import debug from 'debug';
+debug('graphql:server');
+import http from 'http';
+import expressSession from 'express-session';
 
 /**
  * Creates the Express server using the provided middlewares
  * @param {Array} customMiddlewares array with middlewares to add to the express instance
  */
-module.exports = function (customMiddlewares) {
+export default function (customMiddlewares) {
    db.sequelize.sync().then( () => {
       // Seed an admin user
       bcrypt.genSalt(10, ( err, salt ) => {
@@ -43,7 +44,7 @@ module.exports = function (customMiddlewares) {
       });
    });
 
-   let app = express();
+   const app = express();
 
    // Configure the local strategy for use by Passport.
    //
@@ -103,13 +104,11 @@ module.exports = function (customMiddlewares) {
       });
    });
 
-   // TODO fix favicon (need to bundle icon with server code)
-   //app.use(favicon('../client/favicon.png'));
    app.use(logger('dev'));
    app.use(bodyParser.json());
    app.use(bodyParser.urlencoded({ extended: false }));
    app.use(cookieParser());
-   app.use(require('express-session')({ secret: config.get('sessionSecret'), resave: false, saveUninitialized: false }));
+   app.use(expressSession({ secret: config.get('sessionSecret'), resave: false, saveUninitialized: false }));
    // Initialize Passport and restore authentication state, if any, from the
    // session.
    app.use(passport.initialize());
@@ -125,14 +124,14 @@ module.exports = function (customMiddlewares) {
       app.use(middleware);
    });
 
-   app.all('/*', ( req, res, next ) => {
+   app.all('/*', ( req, res ) => {
       res.status(404)
          .send('Not found');
    });
 
    // catch 404 and forward to error handler
    app.use(( req, res, next ) => {
-      let err = new Error('Not Found');
+      const err = new Error('Not Found');
       err.status = 404;
       next(err);
    });
@@ -142,7 +141,7 @@ module.exports = function (customMiddlewares) {
    // development error handler
    // will print stacktrace
    if ( app.get('env') === 'development' ) {
-      app.use(( err, req, res, next ) => {
+      app.use(( err, req, res ) => {
          res.status(err.status || 500);
          res.render('error', {
             message: err.message,
@@ -153,7 +152,7 @@ module.exports = function (customMiddlewares) {
 
    // production error handler
    // no stacktraces leaked to user
-   app.use(( err, req, res, next ) => {
+   app.use(( err, req, res ) => {
       res.status(err.status || 500);
       res.render('error', {
          message: err.message,
@@ -161,32 +160,31 @@ module.exports = function (customMiddlewares) {
       });
    });
 
-   let port = parseInt(process.env.PORT || '3000', 10);
+   const port = parseInt(process.env.PORT || '3000', 10);
    app.set('port', port);
 
    /**
     * Create HTTP server.
     */
-   let server = http.createServer(app);
+   const server = http.createServer(app);
 
    server.on('error', (error) => {
       if (error.syscall !== 'listen') {
          throw error;
       }
 
-      let bind = typeof port === 'string' ?
+      const bind = typeof port === 'string' ?
          'Pipe ' + port : 'Port ' + port;
 
-      // handle specific listen errors with friendly messages
       switch (error.code) {
          case 'EACCES':
-            console.error(bind + ' requires elevated privileges');
+            console.error(bind + ' requires elevated privileges'); //eslint-disable-line no-console
             process.exit(1);
-         break;
+            break;
          case 'EADDRINUSE':
-            console.error(bind + ' is already in use');
+            console.error(bind + ' is already in use'); //eslint-disable-line no-console
             process.exit(1);
-         break;
+            break;
          default:
             throw error;
       }
@@ -194,8 +192,8 @@ module.exports = function (customMiddlewares) {
 
 
    server.on('listening', () => {
-      let addr = server.address();
-      let bind = typeof addr === 'string' ?
+      const addr = server.address();
+      const bind = typeof addr === 'string' ?
          'pipe ' + addr : 'port ' + addr.port;
       debug('Listening on ' + bind);
    });
@@ -205,4 +203,4 @@ module.exports = function (customMiddlewares) {
     */
 
    server.listen(port);
-};
+}

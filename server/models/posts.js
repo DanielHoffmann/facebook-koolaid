@@ -1,12 +1,19 @@
 'use strict';
 
-let Sequelize = require('sequelize'),
-   resolver = require('graphql-sequelize').resolver,
-   gQL = require('graphql');
+import Sequelize from 'sequelize';
+import {resolver} from 'graphql-sequelize';
+import {
+   GraphQLObjectType,
+   GraphQLInputObjectType,
+   GraphQLNonNull,
+   GraphQLInt,
+   GraphQLString,
+   GraphQLList
+} from 'graphql';
 
-module.exports = {
+export default {
    sequelizeModel(sequelize) {
-      let Posts = sequelize.define('Posts', {
+      const Posts = sequelize.define('Posts', {
          id: {
             type: Sequelize.INTEGER,
             primaryKey: true,
@@ -26,30 +33,34 @@ module.exports = {
    },
 
    sequelizeAssociate(db) {
-      db.models.Posts.belongsTo(db.models.Users);
+      db.models.Posts.belongsTo(db.models.Users, {as: 'creator'});
    },
 
    graphQLTypes(db) {
       return {
-         Post: new gQL.GraphQLObjectType({
+         Post: new GraphQLObjectType({
             name: 'Post',
             description: 'A post',
             fields: () => {
                return {
                   id: {
-                     type: new gQL.GraphQLNonNull(gQL.GraphQLInt),
+                     type: new GraphQLNonNull(GraphQLInt),
                      description: 'The id of the post'
                   },
                   title: {
-                     type: new gQL.GraphQLNonNull(gQL.GraphQLString),
+                     type: new GraphQLNonNull(GraphQLString),
                      description: 'The title of the post',
                   },
                   content: {
-                     type: new gQL.GraphQLNonNull(gQL.GraphQLString),
+                     type: new GraphQLNonNull(GraphQLString),
                      description: 'The content of the post',
                   },
+                  createdAt: {
+                     type: new GraphQLNonNull(GraphQLString),
+                     description: 'The creation date of this comment'
+                  },
                   creator: {
-                     type: new gQL.GraphQLNonNull(db.graphQLTypes.User),
+                     type: new GraphQLNonNull(db.graphQLTypes.User),
                      description: 'The user who created this post',
                      resolve: resolver(db.models.Users)
                   }
@@ -57,17 +68,17 @@ module.exports = {
             }
          }),
 
-         PostInput: new gQL.GraphQLInputObjectType({
+         PostInput: new GraphQLInputObjectType({
             name: 'PostInput',
             description: 'A post',
             fields: () => {
                return {
                   title: {
-                     type: new gQL.GraphQLNonNull(gQL.GraphQLString),
+                     type: new GraphQLNonNull(GraphQLString),
                      description: 'The title of the post',
                   },
                   content: {
-                     type: new gQL.GraphQLNonNull(gQL.GraphQLString),
+                     type: new GraphQLNonNull(GraphQLString),
                      description: 'The content of the post',
                   }
                };
@@ -79,19 +90,19 @@ module.exports = {
    graphQLQueries(db) {
       return {
          posts: {
-            type: new gQL.GraphQLList(db.graphQLTypes.Post),
+            type: new GraphQLList(db.graphQLTypes.Post),
             args: {
                id: {
-                  type: gQL.GraphQLInt
+                  type: GraphQLInt
                },
                title: {
-                  type: gQL.GraphQLString
+                  type: GraphQLString
                },
                limit: {
-                  type: gQL.GraphQLInt
+                  type: GraphQLInt
                },
                order: {
-                  type: gQL.GraphQLString
+                  type: GraphQLString
                }
             },
             resolve: resolver(db.models.Posts)
@@ -110,7 +121,7 @@ module.exports = {
                }
             },
             resolve: (value, {post}) => {
-               post.UserId = 1; // TODO get current logged in user
+               post.creatorId = 1; // TODO get current logged in user
                return db.models.Posts.create(post);
             }
          },
@@ -120,7 +131,7 @@ module.exports = {
             description: 'Updates a new post, a post can only be updated by its creator or an admin',
             args: {
                id: {
-                  type: gQL.GraphQLInt,
+                  type: GraphQLInt,
                   description: 'The ID of the post to be updated'
                },
                post: {
@@ -128,9 +139,9 @@ module.exports = {
                }
             },
             resolve: (value, {id, post}) => {
-               let Posts = db.models.Posts;
+               const Posts = db.models.Posts;
                return db.sequelize.transaction(function ( t ) {
-                  return Posts.findById({id, transaction: t})
+                  return Posts.findById(id, {transaction: t})
                      .then((dbPost) => {
                         // TODO check logged user
                         return dbPost.update(post, {transaction: t});
