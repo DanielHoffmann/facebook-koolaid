@@ -1,4 +1,81 @@
 # facebook-koolaid
 Simple application showcasing Facebook tech stack: React, Relay and GraphQL in a real world application
+```
+{
+  posts {
+    id,
+    title,
+    createdAt,
+    creator {
+   		email
+    }
+  }
+}
 
-http://localhost:3000/api/graphql?query=%23%20%7B%0A%23%20%20%20posts%20%7B%0A%23%20%20%20%20%20id%2C%0A%23%20%20%20%20%20title%2C%0A%23%20%20%20%20%20createdAt%2C%0A%23%20%20%20%20%20creator%20%7B%0A%23%20%20%20%20%09%09email%0A%23%20%20%20%20%20%7D%0A%23%20%20%20%7D%0A%23%20%7D%0A%0A%23%20mutation%20%7B%0A%23%20%20%20createPost(post%3A%20%7B%0A%23%20%20%20%20%20title%3A%20%22test%22%2C%20%0A%23%20%20%20%20%20content%3A%20%22test2%22%0A%23%20%20%20%7D)%20%7B%0A%23%20%20%20%20%20id%2C%0A%23%20%20%20%20%20title%2C%0A%23%20%20%20%20%20content%2C%0A%23%20%20%20%20%20creator%20%7B%0A%23%20%20%20%20%20%20%20id%2C%0A%23%20%20%20%20%20%20%20email%0A%23%20%20%20%20%20%7D%0A%23%20%20%20%7D%0A%23%20%7D%0A%0A%23%20mutation%20%7B%0A%23%20%20%20updatePost(id%3A%201%2C%20post%3A%20%7B%0A%23%20%20%20%20%20title%3A%20%22a%22%2C%20%0A%23%20%20%20%20%20content%3A%20%22bbb%22%0A%23%20%20%20%7D)%20%7B%0A%23%20%20%20%20%20id%2C%0A%23%20%20%20%20%20title%2C%0A%23%20%20%20%20%20content%2C%0A%23%20%20%20%20%20creator%20%7B%0A%23%20%20%20%20%20%20%20id%2C%0A%23%20%20%20%20%20%20%20email%0A%23%20%20%20%20%20%7D%0A%23%20%20%20%7D%0A%23%20%7D%0A%0A%23%20%7B%0A%23%20%20%20comments%20%7B%0A%23%20%20%20%20%20id%2C%0A%23%20%20%20%20%20content%2C%0A%23%20%09%09createdAt%2C%0A%23%20%20%20%20%20creator%20%7B%0A%23%20%20%20%20%20%20%20id%2C%20email%0A%23%20%20%20%20%20%7D%2C%0A%23%20%20%20%20%20post%20%7B%0A%23%20%20%20%20%20%20%20id%2C%20title%0A%23%20%20%20%20%20%20%20creator%20%7B%0A%23%20%20%20%20%20%20%20%20%20id%2C%20email%0A%23%20%20%20%20%20%20%20%7D%0A%23%20%20%20%20%20%7D%0A%23%20%20%20%7D%0A%23%20%7D%0A%0A%23%20mutation%20%7B%0A%23%20%20%20createComment(comment%3A%20%7B%0A%23%20%20%20%20%09content%3A%20%22somecomment%22%2C%0A%23%20%20%20%20%20postId%3A%201%0A%23%20%20%20%7D)%20%7B%0A%23%20%20%20%20%20id%0A%23%20%20%20%7D%0A%23%20%7D%0A&operationName=null
+mutation {
+  createPost(post: {
+    title: "test",
+    content: "test2"
+  }) {
+    id,
+    title,
+    content,
+    creator {
+      id,
+      email
+    }
+  }
+}
+
+mutation {
+  updatePost(id: 1, post: {
+    title: "a",
+    content: "bbb"
+  }) {
+    id,
+    title,
+    content,
+    creator {
+      id,
+      email
+    }
+  }
+}
+
+{
+  comments {
+    id,
+    content,
+		createdAt,
+    creator {
+      id, email
+    },
+    post {
+      id, title
+      creator {
+        id, email
+      }
+    }
+  }
+}
+
+mutation {
+  createComment(comment: {
+   	content: "somecomment",
+    postId: 1
+  }) {
+		id,
+    content,
+		createdAt,
+    creator {
+      id, email
+    },
+    post {
+      id, title, createdAt,
+      creator {
+        id, email
+      }
+    }
+  }
+}
+```
