@@ -1,7 +1,6 @@
 'use strict';
 
 import Sequelize from 'sequelize';
-import {resolver} from 'graphql-sequelize';
 import {
    GraphQLObjectType,
    GraphQLNonNull,
@@ -56,15 +55,37 @@ export default {
                return {
                   id: {
                      type: new GraphQLNonNull(GraphQLInt),
-                     description: 'The id of the user.'
+                     description: 'The id of the user'
                   },
                   email: {
                      type: new GraphQLNonNull(GraphQLString),
-                     description: 'The email of the user.',
+                     description: 'The email of the user',
                   },
                   isAdmin: {
                      type: new GraphQLNonNull(GraphQLBoolean),
-                     description: 'True if the user is an admin.',
+                     description: 'True if the user is an admin',
+                  },
+                  posts: {
+                     type: new GraphQLNonNull(new GraphQLList(db.graphQLTypes.Post)),
+                     description: 'Posts made by this user',
+                     resolve: (context) => {
+                        return db.models.Posts.findAll({
+                           where: {
+                              creatorId: context.id
+                           }
+                        });
+                     }
+                  },
+                  comments: {
+                     type: new GraphQLNonNull(new GraphQLList(db.graphQLTypes.Comment)),
+                     description: 'Comments made by this user',
+                     resolve: (context) => {
+                        return db.models.Comments.findAll({
+                           where: {
+                              creatorId: context.id
+                           }
+                        });
+                     }
                   }
                };
             }
@@ -85,15 +106,21 @@ export default {
                },
                isAdmin: {
                   type: GraphQLBoolean
-               },
-               limit: {
-                  type: GraphQLInt
-               },
-               order: {
-                  type: GraphQLString
                }
             },
-            resolve: resolver(db.models.Users)
+            resolve: (context, {id, email}) => {
+               if (id != null) {
+                  return db.models.Users.findById(id);
+               } else if (email != null) {
+                  return db.models.Users.find({
+                     where: {
+                        email
+                     }
+                  });
+               } else {
+                  return db.models.Users.findAll();
+               }
+            }
          }
       };
    },

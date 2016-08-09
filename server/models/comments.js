@@ -1,7 +1,6 @@
 'use strict';
 
 import Sequelize from 'sequelize';
-import {resolver} from 'graphql-sequelize';
 import {
    GraphQLObjectType,
    GraphQLInputObjectType,
@@ -56,12 +55,16 @@ export default {
                   post: {
                      type: new GraphQLNonNull(db.graphQLTypes.Post),
                      description: 'The post this comment belongs to',
-                     resolve: resolver(db.models.Posts)
+                     resolve: (context) => {
+                        return db.models.Posts.findById(context.postId);
+                     }
                   },
                   creator: {
                      type: new GraphQLNonNull(db.graphQLTypes.User),
                      description: 'The user who created this comment',
-                     resolve: resolver(db.models.Users)
+                     resolve: (context) => {
+                        return db.models.Users.findById(context.creatorId);
+                     }
                   }
                };
             }
@@ -93,21 +96,15 @@ export default {
             args: {
                id: {
                   type: GraphQLInt
-               },
-               postId: {
-                  type: GraphQLInt
-               },
-               creatorId: {
-                  type: GraphQLInt
-               },
-               limit: {
-                  type: GraphQLInt
-               },
-               order: {
-                  type: GraphQLString
                }
             },
-            resolve: resolver(db.models.Comments)
+            resolve: (context, {id}) => {
+               if (id != null) {
+                  return db.models.Comments.findById(id);
+               } else {
+                  return db.models.Comments.findAll();
+               }
+            }
          }
       };
    },

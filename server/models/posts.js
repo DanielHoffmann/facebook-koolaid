@@ -1,7 +1,6 @@
 'use strict';
 
 import Sequelize from 'sequelize';
-import {resolver} from 'graphql-sequelize';
 import {
    GraphQLObjectType,
    GraphQLInputObjectType,
@@ -62,7 +61,23 @@ export default {
                   creator: {
                      type: new GraphQLNonNull(db.graphQLTypes.User),
                      description: 'The user who created this post',
-                     resolve: resolver(db.models.Users)
+                     resolve: (context) => {
+                        return db.models.Users.findById(context.creatorId);
+                     }
+                  },
+                  comments: {
+                     type: new GraphQLNonNull(new GraphQLList(db.graphQLTypes.Comment)),
+                     description: 'The user who created this post',
+                     resolve: (context) => {
+                        return db.models.Comments.findAll({
+                           where: {
+                              postId: context.id
+                           }
+                        })
+                        // .then((res)=> {
+                        //    console.log(res);
+                        // });
+                     }
                   }
                };
             }
@@ -94,18 +109,19 @@ export default {
             args: {
                id: {
                   type: GraphQLInt
-               },
-               title: {
-                  type: GraphQLString
-               },
-               limit: {
-                  type: GraphQLInt
-               },
-               order: {
-                  type: GraphQLString
                }
             },
-            resolve: resolver(db.models.Posts)
+            resolve: (context, {id, limit, order}) => {
+               if (id != null) {
+                  return db.models.Posts.findById(id).then((res) => {
+                     return [res];
+                  });
+               } else {
+                  return db.models.Posts.findAll({
+                     order: [['createdAt', 'DESC']]
+                  });
+               }
+            }
          }
       };
    },
