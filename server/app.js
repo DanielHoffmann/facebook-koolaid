@@ -5,7 +5,7 @@ import bodyParser from 'body-parser';
 import passport from 'passport';
 import {Strategy as LocalStrategy} from 'passport-local';
 import routes from './routes/index';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import colorOut from './util/colorOut.js';
 import _tracer from 'tracer';
 const tracer = _tracer.console(colorOut());

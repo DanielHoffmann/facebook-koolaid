@@ -7,7 +7,7 @@ import tracer from 'tracer';
 let logger = tracer.console(colorOut());
 import db from '../models/index';
 import crypto from 'crypto';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import email from '../api/email';
 
 // Bypass ensuredLogged in for dev

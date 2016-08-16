@@ -5,6 +5,11 @@
       "user": "koolaid",
       "pass": "123"
    },
+   "email": {
+      "awsAccessKey": "",
+      "awsSecretAccessKey": "",
+      "awsRegion": ""
+   },
    "sessionSecret": "someSecretForSessions",
    "appDomain": "http://localhost:3000/",
    "password": "123123"
