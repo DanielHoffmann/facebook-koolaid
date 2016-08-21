@@ -1,3 +1,4 @@
+/* eslint-disable */
 var webpack = require('webpack');
 var path = require('path');
 var fs = require('fs');
@@ -54,9 +55,9 @@ module.exports = {
             test: /\.js?$/,
             loader: 'babel-loader',
             exclude: /node_modules/,
-            query: { // same as .babelrc
-               'presets': ['react', 'es2015', 'stage-0'],
-               'plugins': []
+            query: { // attention, keep this in sync with package.json 'babel' key
+               'presets': ['react', 'stage-0'],
+               'plugins': ['babel-plugin-transform-es2015-modules-commonjs']
             }
          }
       ]

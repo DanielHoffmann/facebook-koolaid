@@ -9,8 +9,11 @@
     "build": "rm -rf ./dist && env NODE_ENV=production node ./node_modules/webpack/bin/webpack.js -p --config ./webpack.server.config.js && env NODE_ENV=production node ./node_modules/webpack/bin/webpack.js -p --config ./webpack.client.config.js"
   },
   "babel": {
+    "plugins": [
+      "babel-plugin-transform-es2015-modules-commonjs"
+    ],
     "presets": [
-      "es2015"
+      "react", "stage-0"
     ],
     "sourceMaps": true
   },
