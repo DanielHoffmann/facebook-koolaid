@@ -5,6 +5,7 @@ import {
    GraphQLObjectType,
    GraphQLNonNull,
    GraphQLInt,
+   GraphQLID,
    GraphQLString,
    GraphQLBoolean,
    GraphQLList
@@ -13,7 +14,7 @@ import {
 export default {
    sequelizeModel: ( sequelize ) => {
       const Users = sequelize.define('Users', {
-         id: {
+         pk: {
             type: Sequelize.INTEGER,
             primaryKey: true,
             autoIncrement: true
@@ -51,11 +52,19 @@ export default {
          User: new GraphQLObjectType({
             name: 'User',
             description: 'A user in the system',
+            interfaces: [db.graphQLTypes.Node],
             fields: () => {
                return {
-                  id: {
+                  pk: {
                      type: new GraphQLNonNull(GraphQLInt),
-                     description: 'The id of the user'
+                     description: 'The database primary key of the user'
+                  },
+                  id: {
+                     type: new GraphQLNonNull(GraphQLID),
+                     description: 'The relayId of the user',
+                     resolve: (obj) => {
+                        return 'User_' + obj.pk
+                     }
                   },
                   email: {
                      type: new GraphQLNonNull(GraphQLString),
@@ -71,7 +80,7 @@ export default {
                      resolve: (context) => {
                         return db.models.Posts.findAll({
                            where: {
-                              creatorId: context.id
+                              creatorPk: context.pk
                            }
                         });
                      }
@@ -82,7 +91,7 @@ export default {
                      resolve: (context) => {
                         return db.models.Comments.findAll({
                            where: {
-                              creatorId: context.id
+                              creatorPk: context.pk
                            }
                         });
                      }
@@ -97,29 +106,8 @@ export default {
       return {
          users: {
             type: new GraphQLList(db.graphQLTypes.User),
-            args: {
-               id: {
-                  type: GraphQLInt
-               },
-               email: {
-                  type: GraphQLString
-               },
-               isAdmin: {
-                  type: GraphQLBoolean
-               }
-            },
-            resolve: (context, {id, email}) => {
-               if (id != null) {
-                  return db.models.Users.findById(id);
-               } else if (email != null) {
-                  return db.models.Users.find({
-                     where: {
-                        email
-                     }
-                  });
-               } else {
-                  return db.models.Users.findAll();
-               }
+            resolve: (context) => {
+               return db.models.Users.findAll();
             }
          }
       };

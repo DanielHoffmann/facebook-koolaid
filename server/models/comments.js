@@ -6,15 +6,15 @@ import {
    GraphQLInputObjectType,
    GraphQLNonNull,
    GraphQLInt,
+   GraphQLID,
    GraphQLString,
    GraphQLList
 } from 'graphql';
 
-
 export default {
    sequelizeModel(sequelize) {
       const Comments = sequelize.define('Comments', {
-         id: {
+         pk: {
             type: Sequelize.INTEGER,
             primaryKey: true,
             autoIncrement: true
@@ -38,11 +38,19 @@ export default {
          Comment: new GraphQLObjectType({
             name: 'Comment',
             description: 'A comment on a post',
+            interfaces: [db.graphQLTypes.Node],
             fields: () => {
                return {
-                  id: {
+                  pk: {
                      type: new GraphQLNonNull(GraphQLInt),
-                     description: 'The id of the comment'
+                     description: 'The database primary key of the comment'
+                  },
+                  id: {
+                     type: new GraphQLNonNull(GraphQLID),
+                     description: 'The relayId of the comment',
+                     resolve: (obj) => {
+                        return 'Comment_' + obj.pk
+                     }
                   },
                   content: {
                      type: new GraphQLNonNull(GraphQLString),
@@ -56,14 +64,14 @@ export default {
                      type: new GraphQLNonNull(db.graphQLTypes.Post),
                      description: 'The post this comment belongs to',
                      resolve: (context) => {
-                        return db.models.Posts.findById(context.postId);
+                        return db.models.Posts.findById(context.postPk);
                      }
                   },
                   creator: {
                      type: new GraphQLNonNull(db.graphQLTypes.User),
                      description: 'The user who created this comment',
                      resolve: (context) => {
-                        return db.models.Users.findById(context.creatorId);
+                        return db.models.Users.findById(context.creatorPk);
                      }
                   }
                };
@@ -79,9 +87,9 @@ export default {
                      type: new GraphQLNonNull(GraphQLString),
                      description: 'The content of the comment',
                   },
-                  postId: {
+                  postPk: {
                      type: new GraphQLNonNull(GraphQLInt),
-                     description: 'The id of the post this comment belongs to',
+                     description: 'The  of the post this comment belongs to',
                   }
                };
             }
@@ -93,17 +101,8 @@ export default {
       return {
          comments: {
             type: new GraphQLList(db.graphQLTypes.Comment),
-            args: {
-               id: {
-                  type: GraphQLInt
-               }
-            },
-            resolve: (context, {id}) => {
-               if (id != null) {
-                  return db.models.Comments.findById(id);
-               } else {
-                  return db.models.Comments.findAll();
-               }
+            resolve: (context) => {
+               return db.models.Comments.findAll();
             }
          }
       };
@@ -120,7 +119,7 @@ export default {
                }
             },
             resolve: (value, {comment}) => {
-               comment.creatorId = 1; // TODO get current logged in user
+               comment.creatorPk = 1; // TODO get current logged in user
                return db.models.Comments.create(comment);
             }
          }

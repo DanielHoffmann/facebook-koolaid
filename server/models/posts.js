@@ -6,6 +6,7 @@ import {
    GraphQLInputObjectType,
    GraphQLNonNull,
    GraphQLInt,
+   GraphQLID,
    GraphQLString,
    GraphQLList
 } from 'graphql';
@@ -13,7 +14,7 @@ import {
 export default {
    sequelizeModel(sequelize) {
       const Posts = sequelize.define('Posts', {
-         id: {
+         pk: {
             type: Sequelize.INTEGER,
             primaryKey: true,
             autoIncrement: true
@@ -40,11 +41,19 @@ export default {
          Post: new GraphQLObjectType({
             name: 'Post',
             description: 'A post',
+            interfaces: [db.graphQLTypes.Node],
             fields: () => {
                return {
-                  id: {
+                  pk: {
                      type: new GraphQLNonNull(GraphQLInt),
-                     description: 'The id of the post'
+                     description: 'The database primary key of the post'
+                  },
+                  id: {
+                     type: new GraphQLNonNull(GraphQLID),
+                     description: 'The relayId of the post',
+                     resolve: (obj) => {
+                        return 'Post_' + obj.pk
+                     }
                   },
                   title: {
                      type: new GraphQLNonNull(GraphQLString),
@@ -62,7 +71,7 @@ export default {
                      type: new GraphQLNonNull(db.graphQLTypes.User),
                      description: 'The user who created this post',
                      resolve: (context) => {
-                        return db.models.Users.findById(context.creatorId);
+                        return db.models.Users.findById(context.creatorPk);
                      }
                   },
                   comments: {
@@ -71,12 +80,9 @@ export default {
                      resolve: (context) => {
                         return db.models.Comments.findAll({
                            where: {
-                              postId: context.id
+                              postPk: context.pk
                            }
-                        })
-                        // .then((res)=> {
-                        //    console.log(res);
-                        // });
+                        });
                      }
                   }
                };
@@ -106,21 +112,8 @@ export default {
       return {
          posts: {
             type: new GraphQLList(db.graphQLTypes.Post),
-            args: {
-               id: {
-                  type: GraphQLInt
-               }
-            },
-            resolve: (context, {id, limit, order}) => {
-               if (id != null) {
-                  return db.models.Posts.findById(id).then((res) => {
-                     return [res];
-                  });
-               } else {
-                  return db.models.Posts.findAll({
-                     order: [['createdAt', 'DESC']]
-                  });
-               }
+            resolve: (context) => {
+               return db.models.Posts.findAll();
             }
          }
       };
@@ -137,32 +130,8 @@ export default {
                }
             },
             resolve: (value, {post}) => {
-               post.creatorId = 1; // TODO get current logged in user
+               post.creatorPk = 1; // TODO get current logged in user
                return db.models.Posts.create(post);
-            }
-         },
-
-         updatePost: {
-            type: db.graphQLTypes.Post,
-            description: 'Updates a new post, a post can only be updated by its creator or an admin',
-            args: {
-               id: {
-                  type: GraphQLInt,
-                  description: 'The ID of the post to be updated'
-               },
-               post: {
-                  type: db.graphQLTypes.PostInput
-               }
-            },
-            resolve: (value, {id, post}) => {
-               const Posts = db.models.Posts;
-               return db.sequelize.transaction(function ( t ) {
-                  return Posts.findById(id, {transaction: t})
-                     .then((dbPost) => {
-                        // TODO check logged user
-                        return dbPost.update(post, {transaction: t});
-                     });
-               });
             }
          }
       };

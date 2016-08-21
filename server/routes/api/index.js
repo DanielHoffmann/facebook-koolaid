@@ -4,7 +4,7 @@ import {ensureLoggedIn} from 'connect-ensure-login';
 import db from '../../models/index';
 import graphqlHTTP from 'express-graphql';
 
-var gqlOptions = {
+let gqlOptions = {
    schema: db.schema
 };
 

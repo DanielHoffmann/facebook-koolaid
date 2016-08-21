@@ -2,12 +2,15 @@
 
 import pg from 'pg'
 pg.defaults.parseInt8 = true;
-import {_extend as extend} from 'util';
+import {_extend as extend } from 'util';
 import config from 'config';
 import Sequelize from 'sequelize';
 import {
    GraphQLSchema,
-   GraphQLObjectType
+   GraphQLObjectType,
+   GraphQLInterfaceType,
+   GraphQLID,
+   GraphQLNonNull,
 } from 'graphql';
 import colorOut from '../util/colorOut.js';
 import tracer from 'tracer';
@@ -28,13 +31,47 @@ const logger = tracer.console(colorOut()),
    dbUser = config.get('db.user'),
    dbPass = config.get('db.pass');
 
+const db = {};
 
-const db = {
-   graphQLTypes: {},
-   graphQLQueries: {},
-   graphQLMutations: {},
-   models: {}
+db.graphQLTypes = {
+   Node: new GraphQLInterfaceType({
+      name: 'Node',
+      fields: {
+         id: {
+            type: new GraphQLNonNull(GraphQLID),
+            description: 'Unique id among all entities in the Schema, used for Relay.',
+            resolve: (...args) => {
+               console.log(args);
+            }
+         }
+      },
+      resolveType: () => {
+         return db.graphQLTypes.User;
+      }
+   })
 };
+
+db.graphQLQueries = {
+   node: {
+      type: db.graphQLTypes.Node,
+      args: {
+         id: {
+            type: new GraphQLNonNull(GraphQLID),
+            description: 'The relayId of the node',
+         }
+      },
+      resolve: (context, {id}) => {
+         let [entity, id2] = id.split('_');
+         id2 = parseInt(id2, 10);
+         return db.models[entity].findById(id2);
+      }
+   }
+};
+
+db.graphQLMutations = {};
+
+db.models = {};
+
 
 logger.info('Connecting to database %s at %s as user @ %s', dbName, dbHost, dbUser);
 
@@ -57,7 +94,7 @@ schemaKeys.forEach((name) => {
    db.models[name] = schemas[name].sequelizeModel(db.sequelize);
 });
 
-// creating associations
+// creating sequelize associations
 schemaKeys.forEach((name) => {
    schemas[name].sequelizeAssociate(db);
 });
