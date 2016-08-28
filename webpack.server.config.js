@@ -54,11 +54,7 @@ module.exports = {
          {
             test: /\.js?$/,
             loader: 'babel-loader',
-            exclude: /node_modules/,
-            query: { // attention, keep this in sync with package.json 'babel' key
-               'presets': ['react', 'stage-0'],
-               'plugins': ['babel-plugin-transform-es2015-modules-commonjs']
-            }
+            exclude: /node_modules/
          }
       ]
    }

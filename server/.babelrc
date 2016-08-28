@@ -1,0 +1,28 @@
+{
+   "env": {
+      "development": {
+         "sourceMaps": true,         
+         "presets": [
+            "stage-0",
+            "react"
+         ],
+         "plugins": [
+            "babel-plugin-transform-es2015-modules-commonjs",
+            "syntax-flow",
+            "tcomb",
+            "transform-flow-strip-types"
+         ]
+      },
+      "production": {
+         "plugins": [
+           "babel-plugin-transform-es2015-modules-commonjs",
+           "syntax-flow",
+           "transform-flow-strip-types"
+         ],
+         "presets": [
+           "stage-0",
+           "react"
+         ]
+      }
+   }
+}

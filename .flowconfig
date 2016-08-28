@@ -1,0 +1,16 @@
+[ignore]
+.*/node_modules/.*json$
+
+[include]
+
+[libs]
+./node_modules/fbjs/flow/lib
+
+[options]
+suppress_type=$FlowIssue
+module.ignore_non_literal_requires=true
+# Flow can not find these dependencies on its own, so we use a placeholder for them
+module.name_mapper='passport'->'<PROJECT_ROOT>/flowPlaceholder.js'
+module.name_mapper='passport-local'->'<PROJECT_ROOT>/flowPlaceholder.js'
+module.name_mapper='config'->'<PROJECT_ROOT>/flowPlaceholder.js'
+module.name_mapper='debug'->'<PROJECT_ROOT>/flowPlaceholder.js'

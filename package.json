@@ -3,19 +3,14 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "./node_modules/sequelize-cli/bin/sequelize db:migrate && nodemon --exec 'env NODE_ENV=development ./node_modules/babel-cli/bin/babel-node.js ./server/webpackDevServer.js'",
-    "debug": "./node_modules/sequelize-cli/bin/sequelize db:migrate && nodemon --exec 'env NODE_ENV=development ./node_modules/babel-cli/bin/babel-node.js --debug ./server/webpackDevServer.js'",
-    "debug-brk": "./node_modules/sequelize-cli/bin/sequelize db:migrate && nodemon --exec 'env NODE_ENV=development ./node_modules/babel-cli/bin/babel-node.js --debug --debug-brk ./server/webpackDevServer.js'",
-    "build": "rm -rf ./dist && env NODE_ENV=production node ./node_modules/webpack/bin/webpack.js -p --config ./webpack.server.config.js && env NODE_ENV=production node ./node_modules/webpack/bin/webpack.js -p --config ./webpack.client.config.js"
-  },
-  "babel": {
-    "plugins": [
-      "babel-plugin-transform-es2015-modules-commonjs"
-    ],
-    "presets": [
-      "react", "stage-0"
-    ],
-    "sourceMaps": true
+    "migrations": "sequelize db:migrate",
+    "lint": "eslint .",
+    "flow": "flow",
+    "validate": "npm run lint && npm run flow",
+    "start": "nodemon --exec 'env NODE_ENV=development babel-node.js ./server/webpackDevServer.js'",
+    "debug": "nodemon --exec 'env NODE_ENV=development babel-node --debug ./server/webpackDevServer.js'",
+    "debug-brk": "nodemon --exec 'env NODE_ENV=development babel-node.js --debug --debug-brk ./server/webpackDevServer.js'",
+    "build": "npm run validate && rm -rf ./dist && env NODE_ENV=production node webpack -p --config ./webpack.server.config.js && env NODE_ENV=production node webpack.js -p --config ./webpack.client.config.js"
   },
   "dependencies": {
     "babel-cli": "^6.10.1",
@@ -59,9 +54,14 @@
     "url-loader": "^0.5.7"
   },
   "devDependencies": {
+    "babel-eslint": "^6.1.2",
+    "babel-plugin-tcomb": "^0.3.11",
+    "babel-plugin-transform-flow-strip-types": "^6.14.0",
     "copy-webpack-plugin": "^3.0.1",
     "eslint": "^3.2.2",
+    "eslint-plugin-flowtype": "^2.11.4",
     "eslint-plugin-react": "^6.0.0",
+    "flow-bin": "^0.31.1",
     "nodemon": "^1.9.1",
     "react-transform-catch-errors": "^1.0.2",
     "react-transform-hmr": "^1.0.4",
