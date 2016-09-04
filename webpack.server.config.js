@@ -17,16 +17,16 @@ var plugins = [
       }
    }),
    new webpack.BannerPlugin( // allows stacktraces to use sourcemaps
-      'require("source-map-support").install();',
-      { raw: true, entryOnly: false }
-   ),
+         'require("source-map-support").install();',
+         { raw: true, entryOnly: false }
+      ),
    new webpack.optimize.DedupePlugin(),
    new CopyWebpackPlugin([{
-      from: './config',
-      to: './config'
-   }], {
-      copyUnmodified: true
-   })
+         from: './config',
+         to: './config'
+      }], {
+         copyUnmodified: true
+      })
 ];
 fs.readdirSync('node_modules')
    .filter(function(x) {

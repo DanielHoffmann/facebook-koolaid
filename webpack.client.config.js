@@ -2,7 +2,7 @@
 var path = require('path');
 var webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
-
+var BabiliPlugin = require("babili-webpack-plugin");
 var appEntry;
 var devtool;
 var plugins;
@@ -20,12 +20,7 @@ if (process.env.NODE_ENV === 'production') {
       new webpack.optimize.DedupePlugin(),
       new webpack.optimize.OccurrenceOrderPlugin(),
       new webpack.optimize.CommonsChunkPlugin('vendor', 'vendor.js'),
-      new webpack.optimize.UglifyJsPlugin({
-         compress: {
-            warnings: false,
-            screw_ie8: true
-         }
-      }),
+      new BabiliPlugin({}),
       new HtmlWebpackPlugin({
          title: 'GraphQL server test',
          template: './client/index.html',
